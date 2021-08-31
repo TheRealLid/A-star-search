@@ -6,9 +6,9 @@ class Node:
         self.connectionCost = []  # cost of getting to node from self.node
         self.nodeName = nodeName  # name of self.node
         # estimate between node and goal state, must be bellow or equal to real distance
-        self.straightLineDistance = straightLineDistance  # h(n) of self.node
-        self.costSoFar = 0
-        self.totalEstimatedCost = 0
+        self.h = straightLineDistance  # h(n) of self.node
+        self.g = 0
+        self.f = 0
 
     # adds the name and cost from self.node to another node
     def addConnection(self, nodeName, cost):
@@ -63,20 +63,29 @@ if __name__ == '__main__':
 
     visted = []
     visted.append(nodes[dict[startingNode]])
-
+    smallestF = float('inf')
+    smallestFPath = ''
+    
     for i in range(0, len(nodes[dict[currentNode]].connections)):
 
-        nodes[dict[nodes[dict[currentNode]].connections[i]]].costSoFar += int(nodes[dict[currentNode]].connectionCost[i])
-        nodes[dict[nodes[dict[currentNode]].connections[i]]].totalEstimatedCost = nodes[dict[currentNode]].costSoFar + \
-                                                      nodes[dict[nodes[dict[currentNode]].connections[i]]].straightLineDistance
+
+        # calculates and stores g(n), and f(n) in the respective nodes
+        nodes[dict[nodes[dict[currentNode]].connections[i]]].g += int(nodes[dict[currentNode]].connectionCost[i])
+
+        nodes[dict[nodes[dict[currentNode]].connections[i]]].f = nodes[dict[nodes[dict[currentNode]].connections[i]]].g + nodes[dict[nodes[dict[currentNode]].connections[i]]].h
+
+        if nodes[dict[nodes[dict[currentNode]].connections[i]]].f < smallestF:
+            smallestF = nodes[dict[nodes[dict[currentNode]].connections[i]]].f
+            smallestFPath = nodes[dict[nodes[dict[currentNode]].connections[i]]].nodeName
 
         #nodes[dict[currentNode]].costSoFar += int(nodes[dict[currentNode]].connectionCost[i])
         #nodes[dict[currentNode]].totalEstimatedCost = nodes[dict[currentNode]].costSoFar + \
         #                                              nodes[dict[nodes[dict[currentNode]].connections[i]]].straightLineDistance
 
-        print("Cost so far to " + nodes[dict[nodes[dict[currentNode]].connections[i]]].nodeName + " "+str(nodes[dict[nodes[dict[currentNode]].connections[i]]].costSoFar))
-        print("Total Estimated Cost from " + nodes[dict[nodes[dict[currentNode]].connections[i]]].nodeName + " to goal "+str(nodes[dict[nodes[dict[currentNode]].connections[i]]].totalEstimatedCost))
-        nodes[dict[currentNode]].costSoFar = 0
+        print("Cost so far to " + nodes[dict[nodes[dict[currentNode]].connections[i]]].nodeName + " " + str(nodes[dict[nodes[dict[currentNode]].connections[i]]].g))
+        print("Total Estimated Cost from " + nodes[dict[nodes[dict[currentNode]].connections[i]]].nodeName + " to goal " + str(nodes[dict[nodes[dict[currentNode]].connections[i]]].f))
+    print("smallest F was: " + str(smallestF) + " This was to " + smallestFPath)
+    currentNode = smallestFPath
 
 # TODO find a more efficient way to make connections between nodes.
 # TODO create function to keep track of visited nodes
