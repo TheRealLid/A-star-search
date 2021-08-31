@@ -1,8 +1,11 @@
 class Node:
     def __init__(self, nodeName, straightLineDistance):
+        # index of connections and connectionCosts line up.
+        # Connections[0] corresponds to connectionCost[0]
         self.connections = []  # list of accessible nodes from self.node
-        self.connectionCost = []  # cost of getting to node from self.node Index of connections and connectionCost line up
+        self.connectionCost = []  # cost of getting to node from self.node
         self.nodeName = nodeName  # name of self.node
+        # estimate between node and goal state, must be bellow or equal to real distance
         self.straightLineDistance = straightLineDistance  # h(n) of self.node
 
     # adds the name and cost from self.node to another node
@@ -45,4 +48,16 @@ def createConnections(nodes):
 if __name__ == '__main__':
     nodes = createNodes()
     createConnections(nodes)
-    print(nodes[3].connections[1] + " " + nodes[3].connectionCost[1])
+   #  print(nodes[1].connections[1] + " " + nodes[1].connectionCost[1])
+    visted = []
+    visted.append(nodes[0])
+    # creates dictionary to reference location indexes in the node array
+    dict = {}
+    for i in range(0, len(nodes)):
+        dict[nodes[i].nodeName] = i
+    print(nodes[dict["Bucharest"]].straightLineDistance)
+
+
+# TODO find a more efficient way to make connections between nodes.
+# TODO create function to keep track of visited nodes
+# TODO create function to calculate h(n) + g(n)
