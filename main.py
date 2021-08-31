@@ -63,30 +63,38 @@ if __name__ == '__main__':
 
     visted = []
     visted.append(nodes[dict[startingNode]])
-    smallestF = float('inf')
-    smallestFPath = ''
-    
-    for i in range(0, len(nodes[dict[currentNode]].connections)):
+
+    while True:
+        smallestF = float('inf')
+        smallestFPath = ''
+        for i in range(0, len(nodes[dict[currentNode]].connections)):
 
 
-        # calculates and stores g(n), and f(n) in the respective nodes
-        nodes[dict[nodes[dict[currentNode]].connections[i]]].g += int(nodes[dict[currentNode]].connectionCost[i])
+            # calculates and stores g(n), and f(n) in the respective nodes
+            nodes[dict[nodes[dict[currentNode]].connections[i]]].g += int(nodes[dict[currentNode]].g) # Causes infinite loop, Why?
+            nodes[dict[nodes[dict[currentNode]].connections[i]]].g += int(nodes[dict[currentNode]].connectionCost[i])
 
-        nodes[dict[nodes[dict[currentNode]].connections[i]]].f = nodes[dict[nodes[dict[currentNode]].connections[i]]].g + nodes[dict[nodes[dict[currentNode]].connections[i]]].h
+            nodes[dict[nodes[dict[currentNode]].connections[i]]].f = nodes[dict[nodes[dict[currentNode]].connections[i]]].g + nodes[dict[nodes[dict[currentNode]].connections[i]]].h
 
-        if nodes[dict[nodes[dict[currentNode]].connections[i]]].f < smallestF:
-            smallestF = nodes[dict[nodes[dict[currentNode]].connections[i]]].f
-            smallestFPath = nodes[dict[nodes[dict[currentNode]].connections[i]]].nodeName
+            if nodes[dict[nodes[dict[currentNode]].connections[i]]].f < smallestF:
+                smallestF = nodes[dict[nodes[dict[currentNode]].connections[i]]].f
+                smallestFPath = nodes[dict[nodes[dict[currentNode]].connections[i]]].nodeName
 
-        #nodes[dict[currentNode]].costSoFar += int(nodes[dict[currentNode]].connectionCost[i])
-        #nodes[dict[currentNode]].totalEstimatedCost = nodes[dict[currentNode]].costSoFar + \
-        #                                              nodes[dict[nodes[dict[currentNode]].connections[i]]].straightLineDistance
+            #nodes[dict[currentNode]].costSoFar += int(nodes[dict[currentNode]].connectionCost[i])
+            #nodes[dict[currentNode]].totalEstimatedCost = nodes[dict[currentNode]].costSoFar + \
+            #                                              nodes[dict[nodes[dict[currentNode]].connections[i]]].straightLineDistance
 
-        print("Cost so far to " + nodes[dict[nodes[dict[currentNode]].connections[i]]].nodeName + " " + str(nodes[dict[nodes[dict[currentNode]].connections[i]]].g))
-        print("Total Estimated Cost from " + nodes[dict[nodes[dict[currentNode]].connections[i]]].nodeName + " to goal " + str(nodes[dict[nodes[dict[currentNode]].connections[i]]].f))
-    print("smallest F was: " + str(smallestF) + " This was to " + smallestFPath)
-    currentNode = smallestFPath
+            #print("Cost so far to " + nodes[dict[nodes[dict[currentNode]].connections[i]]].nodeName + " " + str(nodes[dict[nodes[dict[currentNode]].connections[i]]].g))
+            # print("Total Estimated Cost from " + nodes[dict[nodes[dict[currentNode]].connections[i]]].nodeName + " to goal " + str(nodes[dict[nodes[dict[currentNode]].connections[i]]].f))
+        # print("smallest F was: " + str(smallestF) + " This was to " + smallestFPath)
+
+        print(currentNode)
+        print("Cost so far to " + nodes[dict[nodes[dict[currentNode]].connections[i]]].nodeName + " " + str(
+           nodes[dict[nodes[dict[currentNode]].connections[i]]].f))
+        currentNode = smallestFPath
+        if smallestFPath == "Bucharest":
+            break
 
 # TODO find a more efficient way to make connections between nodes.
 # TODO create function to keep track of visited nodes
-# TODO create function to calculate h(n) + g(n)
+# TODO The total cost of path is not being added properly, likely do to with the weird way i implemented the connections
