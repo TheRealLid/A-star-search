@@ -7,6 +7,8 @@ class Node:
         self.nodeName = nodeName  # name of self.node
         # estimate between node and goal state, must be bellow or equal to real distance
         self.straightLineDistance = straightLineDistance  # h(n) of self.node
+        self.costSoFar = 0
+        self.totalEstimatedCost = 0
 
     # adds the name and cost from self.node to another node
     def addConnection(self, nodeName, cost):
@@ -46,17 +48,35 @@ def createConnections(nodes):
 
 
 if __name__ == '__main__':
+
+    startingNode = input("Enter starting node: ")
+    print("From city : " + startingNode)
+    print("To city: Bucharest")
     nodes = createNodes()
     createConnections(nodes)
-   #  print(nodes[1].connections[1] + " " + nodes[1].connectionCost[1])
-    visted = []
-    visted.append(nodes[0])
+    currentNode = startingNode
+
     # creates dictionary to reference location indexes in the node array
     dict = {}
     for i in range(0, len(nodes)):
         dict[nodes[i].nodeName] = i
-    print(nodes[dict["Bucharest"]].straightLineDistance)
 
+    visted = []
+    visted.append(nodes[dict[startingNode]])
+
+    for i in range(0, len(nodes[dict[currentNode]].connections)):
+
+        nodes[dict[nodes[dict[currentNode]].connections[i]]].costSoFar += int(nodes[dict[currentNode]].connectionCost[i])
+        nodes[dict[nodes[dict[currentNode]].connections[i]]].totalEstimatedCost = nodes[dict[currentNode]].costSoFar + \
+                                                      nodes[dict[nodes[dict[currentNode]].connections[i]]].straightLineDistance
+
+        #nodes[dict[currentNode]].costSoFar += int(nodes[dict[currentNode]].connectionCost[i])
+        #nodes[dict[currentNode]].totalEstimatedCost = nodes[dict[currentNode]].costSoFar + \
+        #                                              nodes[dict[nodes[dict[currentNode]].connections[i]]].straightLineDistance
+
+        print("Cost so far to " + nodes[dict[nodes[dict[currentNode]].connections[i]]].nodeName + " "+str(nodes[dict[nodes[dict[currentNode]].connections[i]]].costSoFar))
+        print("Total Estimated Cost from " + nodes[dict[nodes[dict[currentNode]].connections[i]]].nodeName + " to goal "+str(nodes[dict[nodes[dict[currentNode]].connections[i]]].totalEstimatedCost))
+        nodes[dict[currentNode]].costSoFar = 0
 
 # TODO find a more efficient way to make connections between nodes.
 # TODO create function to keep track of visited nodes
