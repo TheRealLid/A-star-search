@@ -7,7 +7,7 @@ class Node:
         self.nodeName = nodeName  # name of self.node
         # estimate between node and goal state, must be bellow or equal to real distance
         self.h = straightLineDistance  # h(n) of self.node
-        self.g = 0
+        self.g = float('inf')
         self.f = 0
 
     # adds the name and cost from self.node to another node
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     print("To city: Bucharest")
     nodes = createNodes()
     createConnections(nodes)
-    currentNode = startingNode
+
     #tempNode = nodes[0]
    # tempNode.nodeName = "test"
    # print(nodes[0].nodeName)
@@ -63,44 +63,51 @@ if __name__ == '__main__':
     dict = {}
     for i in range(0, len(nodes)):
         dict[nodes[i].nodeName] = i
-    nodes[dict[startingNode]].f = nodes[dict[startingNode]].h
+    currentNode = nodes[dict[startingNode]]
+    currentNode.f = nodes[dict[startingNode]].h
     visted = []
-    visted.append(nodes[dict[startingNode]])
+    visted.append(currentNode)
     while True:
         smallestF = float('inf')
         smallestFPath = ''
-        print("current node " + currentNode)
-        for i in range(0, len(nodes[dict[currentNode]].connections)):
+        for i in range(0, len(currentNode.connections)):
 
             # calculates and stores g(n), and f(n) in the respective nodes
-            #moves cost to get to node n-1 to node n
-            nodes[dict[nodes[dict[currentNode]].connections[i]]].g += int(nodes[dict[currentNode]].g) # Causes infinite loop, Why?
+            # moves cost to get to node n-1 to node n
+            nextNode = nodes[dict[currentNode.connections[i]]]
+
+            nextNodeCost = currentNode.connectionCost[i]
+
             # adds cost of new node to n
-            nodes[dict[nodes[dict[currentNode]].connections[i]]].g += int(nodes[dict[currentNode]].connectionCost[i])
-            #adds g + h to get f for node we are moving to
-            nodes[dict[nodes[dict[currentNode]].connections[i]]].f = nodes[dict[nodes[dict[currentNode]].connections[i]]].g + nodes[dict[nodes[dict[currentNode]].connections[i]]].h
+            potentialGScoreForNextNode = nextNodeCost + currentNode.g
+            # nextNode.g = int(nextNodeCost) + int(currentNode.g)
+            if potentialGScoreForNextNode < nextNode.g:
+                nextNode.g = potentialGScoreForNextNode
+                # adds g + h to get f for node we are moving to
+                nextNode.f = nextNode.g + nextNode.h
+            if nextNode not in visted:
+                visted.append(nextNode)
 
             # will be used for visited list
-            for j in range(0, len(visted)):
-                if nodes[dict[nodes[dict[currentNode]].connections[i]]].f > visted[j].f:
-                    # currentNode = startingNode
-                    test = 1
+            #for j in range(0, len(visted)):
+                #if nextNode.f > visted[j].f:
+                    #print("This is going off")
+                    #test = 1
 
-            if nodes[dict[nodes[dict[currentNode]].connections[i]]].f < smallestF:
-                smallestF = nodes[dict[nodes[dict[currentNode]].connections[i]]].f
-                smallestFPath = nodes[dict[nodes[dict[currentNode]].connections[i]]].nodeName
+            if nextNode.f < smallestF:
+                smallestF = nextNode.f
+                smallestFPath = nextNode
 
 
 
-        print(currentNode)
-        print("Cost so far to " + nodes[dict[currentNode]].nodeName + " " + str(
-           nodes[dict[currentNode]].f))
+        #print(currentNode.nodeName)
+        print("Cost so far to " + smallestFPath.nodeName + " " + str(smallestFPath.g))
 
-        visted.append(nodes[dict[currentNode]])
+        visted.append(currentNode)
         currentNode = smallestFPath
 
-        if smallestFPath == "Bucharest":
-            print(currentNode)
+        if smallestFPath.nodeName == "Bucharest":
+            print(currentNode.nodeName)
             break
 
 
