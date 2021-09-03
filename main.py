@@ -7,7 +7,7 @@ class Node:
         self.nodeName = nodeName  # name of self.node
         # estimate between node and goal state, must be bellow or equal to real distance
         self.h = straightLineDistance  # h(n) of self.node
-        self.g = float('inf')
+        self.g = 0
         self.f = 0
 
     # adds the name and cost from self.node to another node
@@ -47,69 +47,83 @@ def createConnections(nodes):
             nodes[i].addConnection(tempMap1[0], tempMap1[1][0:len(tempMap1[1]) - 1])
 
 
-if __name__ == '__main__':
+def makePath(previousNode, currentNode):
+    path = [currentNode]
+    for i in range(0, len(previousNode)):
+        currentNode = previousNode[currentNode]
+        path.append(currentNode)
+    print("Path size = " + str(len(path)))
+    for i in range(0, len(path)):
+        print("Path: " + path[i])
 
+
+if __name__ == '__main__':
     startingNode = input("Enter starting node: ")
     print("From city : " + startingNode)
     print("To city: Bucharest")
     nodes = createNodes()
     createConnections(nodes)
 
-    #tempNode = nodes[0]
-   # tempNode.nodeName = "test"
-   # print(nodes[0].nodeName)
-
     # creates dictionary to reference location indexes in the node array
     dict = {}
     for i in range(0, len(nodes)):
         dict[nodes[i].nodeName] = i
+
     currentNode = nodes[dict[startingNode]]
+
     currentNode.f = nodes[dict[startingNode]].h
-    visted = []
-    visted.append(currentNode)
-    while True:
-        smallestF = float('inf')
-        smallestFPath = ''
+    discoveredNodes = [currentNode]
+    previousNode = {}
+    while discoveredNodes:
+        currentNode = discoveredNodes[0]
+        for i in range(0, len(discoveredNodes)):
+            if discoveredNodes[i].f < currentNode.f:
+                currentNode = discoveredNodes[i]
+
+        print("currentNode.F: " + currentNode.nodeName + " " + str(currentNode.f))
+
+        if currentNode.h == 0:
+            makePath(previousNode, currentNode.nodeName)
+            break
+
+        # removes the current nodes from the discovered list
+        for i in range(0, len(discoveredNodes)):
+            if discoveredNodes[i].nodeName == currentNode.nodeName:
+                del discoveredNodes[i]
+                break
+
+        # loops through all nodes currentNode connects to
         for i in range(0, len(currentNode.connections)):
 
-            # calculates and stores g(n), and f(n) in the respective nodes
-            # moves cost to get to node n-1 to node n
+            # node connecting to current Node
             nextNode = nodes[dict[currentNode.connections[i]]]
-
+            # cost to get to nextNode from currentNode
             nextNodeCost = currentNode.connectionCost[i]
+            # print(currentNode.g)
 
-            # adds cost of new node to n
-            potentialGScoreForNextNode = nextNodeCost + currentNode.g
-            # nextNode.g = int(nextNodeCost) + int(currentNode.g)
+            nextNode.g += int(currentNode.g) + int(nextNodeCost)
+
+            potentialGScoreForNextNode = int(currentNode.g) + int(nextNodeCost)
+            print("nextNode.Name: " + nextNode.nodeName)
+            print("porentailGScoreForNextNode: " + str(potentialGScoreForNextNode))
+            print("nextNode.G: " + str(nextNode.g))
+
             if potentialGScoreForNextNode < nextNode.g:
+                print("goes in here")
+                previousNode[nextNode.nodeName] = currentNode.nodeName
                 nextNode.g = potentialGScoreForNextNode
                 # adds g + h to get f for node we are moving to
                 nextNode.f = nextNode.g + nextNode.h
-            if nextNode not in visted:
-                visted.append(nextNode)
+                if nextNode not in discoveredNodes:
+                    discoveredNodes.append(nextNode)
+            elif nextNode not in discoveredNodes:
+               # previousNode[nextNode.nodeName] = currentNode.nodeName
+                nextNode.g = potentialGScoreForNextNode
+                # adds g + h to get f for node we are moving to
+                #nextNode.f = nextNode.g + nextNode.h
+                discoveredNodes.append(nextNode)
 
-            # will be used for visited list
-            #for j in range(0, len(visted)):
-                #if nextNode.f > visted[j].f:
-                    #print("This is going off")
-                    #test = 1
-
-            if nextNode.f < smallestF:
-                smallestF = nextNode.f
-                smallestFPath = nextNode
-
-
-
-        #print(currentNode.nodeName)
-        print("Cost so far to " + smallestFPath.nodeName + " " + str(smallestFPath.g))
-
-        visted.append(currentNode)
-        currentNode = smallestFPath
-
-        if smallestFPath.nodeName == "Bucharest":
-            print(currentNode.nodeName)
-            break
-
+    print(currentNode.g)
 
 # TODO find a more efficient way to make connections between nodes.
 # TODO create function to keep track of visited nodes
