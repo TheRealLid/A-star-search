@@ -101,7 +101,7 @@ if __name__ == '__main__':
             nextNodeCost = currentNode.connectionCost[i]
             # print(currentNode.g)
 
-            nextNode.g += int(currentNode.g) + int(nextNodeCost)
+            nextNode.g = int(currentNode.g) + int(nextNodeCost)
 
             potentialGScoreForNextNode = int(currentNode.g) + int(nextNodeCost)
             print("nextNode.Name: " + nextNode.nodeName)
@@ -117,14 +117,16 @@ if __name__ == '__main__':
                 if nextNode not in discoveredNodes:
                     discoveredNodes.append(nextNode)
             elif nextNode not in discoveredNodes:
-               # previousNode[nextNode.nodeName] = currentNode.nodeName
+                previousNode[nextNode.nodeName] = currentNode.nodeName
                 nextNode.g = potentialGScoreForNextNode
                 # adds g + h to get f for node we are moving to
-                #nextNode.f = nextNode.g + nextNode.h
+                nextNode.f = nextNode.g + nextNode.h
                 discoveredNodes.append(nextNode)
 
-    print(currentNode.g)
+    print("failed")
+    print(currentNode.f)
 
+# TODO find a more efficient way to make connections between nodes.
 # TODO find a more efficient way to make connections between nodes.
 # TODO create function to keep track of visited nodes
 # TODO The total cost of path is not being added properly, likely do to with the weird way i implemented the connections
